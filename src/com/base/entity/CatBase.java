@@ -38,10 +38,36 @@ public class CatBase {
 	
 	
 	public double trendbuy; //动态机组负责买入边界
-	public double trendsell; //动态机组负责买入边界
+	public double trendsell; //动态机组负责卖出边界
+	public int trendtype; //动态机组负责的0：正常卖买，1：只卖不买
 	
+	public double portfoliolimit; //持仓组合上限限制
+	public int portfoliotype; //持仓组合上限负责0：正常卖买，1：只卖不买
 
-
+	
+	
+	
+	
+	
+	
+	public int getTrendtype() {
+		return trendtype;
+	}
+	public void setTrendtype(int trendtype) {
+		this.trendtype = trendtype;
+	}
+	public int getPortfoliotype() {
+		return portfoliotype;
+	}
+	public void setPortfoliotype(int portfoliotype) {
+		this.portfoliotype = portfoliotype;
+	}
+	public double getPortfoliolimit() {
+		return portfoliolimit;
+	}
+	public void setPortfoliolimit(double portfoliolimit) {
+		this.portfoliolimit = portfoliolimit;
+	}
 	public double getTrendbuy() {
 		return trendbuy;
 	}

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -102,24 +103,23 @@ public class CoinbaseClient  {
 		}
 		
 		
-		JSONArray bases = DBUtils.searchData("select * from catbases");
-		List<CatBase> list_bases =  JsonUtil.toList(bases, CatBase.class);
-
-		for (int i = 0; i < list_bases.size(); i++) {
-			CatBase b = list_bases.get(i);
-			if (b.getTrendbuy()==0&&b.getTrendsell()==0) {
-				b.setTrendbuy(b.getBuyPrice());
-				b.setTrendsell(b.getSellPrice());
-				String[] ucoulmn = new String[]{String.valueOf(b.getTrendbuy()),String.valueOf(b.getTrendsell()),String.valueOf(b.getBid())};
-				int[] utype = new int[]{Types.DOUBLE,Types.DOUBLE,Types.INTEGER};
-				DBUtils.updateData("update catbases set trendbuy = ?,trendsell = ? where bid = ?",ucoulmn,utype);
-			}
-		}
+//		JSONArray bases = DBUtils.searchData("select * from catbases");
+//		List<CatBase> list_bases =  JsonUtil.toList(bases, CatBase.class);
+//
+//		for (int i = 0; i < list_bases.size(); i++) {
+//			CatBase b = list_bases.get(i);
+//			if (b.getTrendbuy()==0&&b.getTrendsell()==0) {
+//				b.setTrendbuy(b.getBuyPrice());
+//				b.setTrendsell(b.getSellPrice());
+//				String[] ucoulmn = new String[]{String.valueOf(b.getTrendbuy()),String.valueOf(b.getTrendsell()),String.valueOf(b.getBid())};
+//				int[] utype = new int[]{Types.DOUBLE,Types.DOUBLE,Types.INTEGER};
+//				DBUtils.updateData("update catbases set trendbuy = ?,trendsell = ? where bid = ?",ucoulmn,utype);
+//			}
+//		}
 		
-		
-
 		lastprice_cbproMap = new HashMap<String, String>();
 		Get50CurrenciesUtil.startTimerGetCurrenciesPrices();
+		
 	}
     
     
@@ -610,13 +610,13 @@ public class CoinbaseClient  {
 		JSONArray units = DBUtils.searchData("select * from catunits where bid = "+bid);
 		List<CatUnit> ulist =  JsonUtil.toList(units, CatUnit.class);
 		
-		
 
 		if (list.size()>0&&ulist.size()==0) {
 			CatBase catBase = list.get(0);
 			cats.setBase(catBase);
 			cats.generatingCatUnits(catBase);
 			cats.baseUnitCirculationLoopOpen(catBase, amount);
+			
 		}else if (list.size()>0&&ulist.size()>0) {
 			CatBase catBase = list.get(0);
 			cats.setBase(catBase);

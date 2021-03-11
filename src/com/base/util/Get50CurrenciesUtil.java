@@ -78,8 +78,8 @@ public class Get50CurrenciesUtil {
 						CoinbaseClient.GetDataFrompythonserver("cbpro",
 								granularity, "EOS", "EUR", "book_level1");
 						Thread.sleep(sleeptime);
-						CoinbaseClient.GetDataFrompythonserver("cbpro",
-								granularity, "NMR", "EUR", "book_level1");
+//						CoinbaseClient.GetDataFrompythonserver("cbpro",
+//								granularity, "NMR", "EUR", "book_level1");
 						Thread.sleep(sleeptime);
 						CoinbaseClient.GetDataFrompythonserver("cbpro",
 								granularity, "ZRX", "EUR", "book_level1");
@@ -92,6 +92,9 @@ public class Get50CurrenciesUtil {
 						Thread.sleep(sleeptime);
 						CoinbaseClient.GetDataFrompythonserver("cbpro",
 								granularity, "XTZ", "EUR", "book_level1");
+						Thread.sleep(sleeptime);
+						CoinbaseClient.GetDataFrompythonserver("cbpro",
+								granularity, "UMA", "EUR", "book_level1");
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -124,11 +127,11 @@ public class Get50CurrenciesUtil {
 					CoinbaseClient.GetDataFrompythonserver("cbpro",
 							granularity, "ETH", "EUR", "ticker");
 					Thread.sleep(sleeptime);
-					CoinbaseClient.GetDataFrompythonserver("cbpro",
-							granularity, "LTC", "EUR", "ticker");
+//					CoinbaseClient.GetDataFrompythonserver("cbpro",
+//							granularity, "LTC", "EUR", "ticker");
 					Thread.sleep(sleeptime);
-					CoinbaseClient.GetDataFrompythonserver("cbpro",
-							granularity, "BCH", "EUR", "ticker");
+//					CoinbaseClient.GetDataFrompythonserver("cbpro",
+//							granularity, "BCH", "EUR", "ticker");
 					Thread.sleep(sleeptime);
 					CoinbaseClient.GetDataFrompythonserver("cbpro",
 							granularity, "XLM", "EUR", "ticker");
@@ -145,8 +148,6 @@ public class Get50CurrenciesUtil {
 					CoinbaseClient.GetDataFrompythonserver("cbpro",
 							granularity, "CGLD", "EUR", "ticker");
 					Thread.sleep(sleeptime);
-					CoinbaseClient.GetDataFrompythonserver("cbpro",
-							granularity, "UMA", "EUR", "ticker");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

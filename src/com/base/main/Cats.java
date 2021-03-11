@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jdk.nashorn.internal.ir.Block;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.base.db.DBUtils;
@@ -68,7 +70,7 @@ public class Cats {
 	}
 	
 
-	
+
 	
 	public void executionCatUnits(CatBase catBase,List<CatUnit> catUnitsManage,JSONObject point){
 		//3.获取最新价格，调动指定单元执行运行
@@ -80,11 +82,67 @@ public class Cats {
 
 		for (int k = 0; k < catUnitsManage.size(); k++) {
 			CatUnit unit = catUnitsManage.get(k);
-			//大于买入区间，小于卖出区间 （或者是否标识未卖出）
-			if (((pricevalue)>=unit.getMarkRangeBuyPrice()&&pricevalue<=unit.getMarkRangeSellPrice())||(unit.getMarkRangeTags()==1)) {
-				if (pricevalue>=catBase.getTrendbuy()&&pricevalue<=catBase.getTrendsell()) {
+
+			//大于卖出区间
+			if (pricevalue>unit.getMarkRangeSellPrice()) {
+				//不看怀孕标签，只看是否买入标签
+				if (unit.getAlreadybought()==1) {
+					//浮动区间判断
+					if (catBase.getTrendbuy()!=0&&catBase.getTrendsell()!=0) {
+						if (pricevalue>=catBase.getTrendbuy()&&pricevalue<=getBase().getTrendsell()) {
+							if (catBase.getTrendtype()==1) {
+								catBase.setTrendtype(0);
+								String[] coulmn = new String[]{String.valueOf(catBase.getTrendtype()),String.valueOf(catBase.getBid())};
+								int[] type = new int[]{Types.INTEGER, Types.INTEGER};
+								DBUtils.updateData("update catbases set trendtype = ? where bid = ?",coulmn,type);
+							}
+						}else {
+							if (catBase.getTrendtype()==0) {
+								catBase.setTrendtype(1);
+								String[] coulmn = new String[]{String.valueOf(catBase.getTrendtype()),String.valueOf(catBase.getBid())};
+								int[] type = new int[]{Types.INTEGER, Types.INTEGER};
+								DBUtils.updateData("update catbases set trendtype = ? where bid = ?",coulmn,type);
+							}
+						}
+					}else {
+						if (catBase.getTrendtype()==1) {
+							catBase.setTrendtype(0);
+							String[] coulmn = new String[]{String.valueOf(catBase.getTrendtype()),String.valueOf(catBase.getBid())};
+							int[] type = new int[]{Types.INTEGER, Types.INTEGER};
+							DBUtils.updateData("update catbases set trendtype = ? where bid = ?",coulmn,type);
+						}
+					}
 					unit.unitAnalysisData(catBase,unit,slopevalue,pricevalue,bid,ask);
 				}
+				
+			}else if(((pricevalue)>=unit.getMarkRangeBuyPrice()&&pricevalue<=unit.getMarkRangeSellPrice())||(unit.getMarkRangeTags()==1)) {
+				//浮动区间判断
+				if (catBase.getTrendbuy()!=0&&catBase.getTrendsell()!=0) {
+					if (pricevalue>=catBase.getTrendbuy()&&pricevalue<=getBase().getTrendsell()) {
+						if (catBase.getTrendtype()==1) {
+							catBase.setTrendtype(0);
+							String[] coulmn = new String[]{String.valueOf(catBase.getTrendtype()),String.valueOf(catBase.getBid())};
+							int[] type = new int[]{Types.INTEGER, Types.INTEGER};
+							DBUtils.updateData("update catbases set trendtype = ? where bid = ?",coulmn,type);
+						}
+					}else {
+						if (catBase.getTrendtype()==0) {
+							catBase.setTrendtype(1);
+							String[] coulmn = new String[]{String.valueOf(catBase.getTrendtype()),String.valueOf(catBase.getBid())};
+							int[] type = new int[]{Types.INTEGER, Types.INTEGER};
+							DBUtils.updateData("update catbases set trendtype = ? where bid = ?",coulmn,type);
+						}
+					}
+				}else {
+					if (catBase.getTrendtype()==1) {
+						catBase.setTrendtype(0);
+						String[] coulmn = new String[]{String.valueOf(catBase.getTrendtype()),String.valueOf(catBase.getBid())};
+						int[] type = new int[]{Types.INTEGER, Types.INTEGER};
+						DBUtils.updateData("update catbases set trendtype = ? where bid = ?",coulmn,type);
+					}
+				}
+
+				unit.unitAnalysisData(catBase,unit,slopevalue,pricevalue,bid,ask);
 			}
 		}
 	}

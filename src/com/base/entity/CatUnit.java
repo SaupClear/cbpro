@@ -301,8 +301,6 @@ public class CatUnit {
 
 		//1:卖出设置取消怀孕   2:价格低于区间取消怀孕   3：价格进入区间设置怀孕  0:未操作
 		CatLog log = new CatLog();
-		
-		
 		Date startdate = new Date();
 		
 		
@@ -398,7 +396,10 @@ public class CatUnit {
 		}
 		
 
-		if(cBase.getWorkingtype()==0&&point>=buyprice*(1-earlyTradespace)&&cUnit.getAboveline()==1&&cUnit.getAlreadybought()==0&&cUnit.getTradestatus().equals("done")){
+		if(cBase.getWorkingtype()==0&&cBase.getTrendtype()==0&&cBase.getPortfoliotype()==0
+				&&point>=buyprice*(1-earlyTradespace)&&
+				point>=cBase.getTrendbuy()&&point>=cBase.getTrendsell()&&
+				cUnit.getAboveline()==1&&cUnit.getAlreadybought()==0&&cUnit.getTradestatus().equals("done")){
 			//执行买入操作
 			//1、去钱包里取钱			
 			double eurAccount = cBase.getUnitavgcurrency();
@@ -412,7 +413,8 @@ public class CatUnit {
 				TradingOrders(point, "buy", cUnit, cBase, log, eurAccount,0.0);
 				
 			}
-		}else if (cBase.getWorkingtype()==0&&point>=buySpaceprice*(1-earlyTradespace)&&cUnit.getSafeaboveline()==1&&cUnit.getAlreadybought()==0&&cUnit.getTradestatus().equals("done")) {
+		}else if (cBase.getWorkingtype()==0&&cBase.getTrendtype()==0&&cBase.getPortfoliotype()==0
+				&&point>=buySpaceprice*(1-earlyTradespace)&&cUnit.getSafeaboveline()==1&&cUnit.getAlreadybought()==0&&cUnit.getTradestatus().equals("done")) {
 			//执行买入操作
 			//1、去钱包里取钱
 
@@ -714,6 +716,45 @@ public class CatUnit {
 	}
 	
 	
+	
+	
+	public void portfolioDataRefresh(CatBase b){
+		
+		if(b.getPortfoliolimit()>10000){
+			
+			JSONArray units = DBUtils.searchData("select * from catunits where bid = "+bid);
+			List<CatUnit> ulist =  JsonUtil.toList(units, CatUnit.class);
+			
+			double value = 0;
+			for (int i = 0; i < ulist.size(); i++) {
+				CatUnit u = ulist.get(i);
+				if (u.getAlreadybought()==1) {
+					value = value + b.getUnitavgcurrency();
+				}
+			}
+			
+			if (value>=b.getPortfoliolimit()) {
+				if (b.getPortfoliolimit()==0) {
+					b.setPortfoliotype(1);
+					String[] coulmn = new String[]{String.valueOf(b.getPortfoliotype()),String.valueOf(b.getBid())};
+					int[] type = new int[]{Types.DOUBLE,Types.INTEGER};
+					DBUtils.updateData("update catbases set portfoliotype = ? where bid = ?",coulmn,type);
+				}
+			}else{
+				if (b.getPortfoliolimit()==1) {
+					b.setPortfoliotype(0);
+					String[] coulmn = new String[]{String.valueOf(b.getPortfoliotype()),String.valueOf(b.getBid())};
+					int[] type = new int[]{Types.DOUBLE,Types.INTEGER};
+					DBUtils.updateData("update catbases set portfoliotype = ? where bid = ?",coulmn,type);
+				}
+			}
+		}
+		
+	}
+	
+	
+	
+	
 	public void TradingOrders(Double point,String logtrade,CatUnit cUnit, CatBase cBase,CatLog log,Double eurAccount,Double baseCount) {
 
 
@@ -913,7 +954,7 @@ public class CatUnit {
 							//不做操作	
 							System.out.print("4.1.Buy no Profit transfer\n");
 							insertTradeData(point,logtrade,cUnit,cBase,log,orderid,filled_size,fill_fees,executed_value,Double.valueOf(price));
-
+							portfolioDataRefresh(cBase);
 
 						}else if (logtrade.equals("sell")) {
 
@@ -936,10 +977,9 @@ public class CatUnit {
 							}
 							
 							insertTradeData(point,logtrade,cUnit,cBase,log,orderid,filled_size,fill_fees,executed_value,Double.valueOf(price));
-							
+							portfolioDataRefresh(cBase);
+
 							JSONObject transjson = new JSONObject();
-							
-							
 							transjson.put("currency", strArr[1]);
 							transjson.put("tradetype", "transfer");
 							
